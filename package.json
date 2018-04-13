@@ -1,19 +1,57 @@
 {
-  "name": "@aeternity/pos-aepp",
+  "name": "pos-aepp",
   "version": "0.1.0",
-  "description": "Point of Sale aepp",
-  "main": "src/main.js",
-  "bin": {
-    "pos-aepp": "src/main.js"
+  "description": "Point of Sale aepp to use together with Beer Aepp",
+  "private": true,
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "build": "NODE_ENV='prod' webpack -p",
+    "start:dev": "NODE_ENV='dev' webpack-serve --mode=development ./webpack.config.js",
+    "pos-aepp": "src/bin/main.js --url https://republica.aepps.com"
   },
-  "repository": "https://github.com/aeternity/pos-aepp",
-  "author": "Alexander Kahl <npm@sodosopa.io>",
+  "main": "src/index.js",
+  "repository": "https://github.com/aeternity/web-aepp",
+  "author": "Alexander Kahl <npm@sodosopa.io>, Enrico Icardi <enrico.icardi@gmail.com>",
   "license": "ISC",
-  "private": false,
   "dependencies": {
-    "@aeternity/aepp-sdk": "^0.9.0-0.1.1",
+    "@aeternity/aepp-components": "^2.0.7",
+    "@aeternity/aepp-sdk": "aeternity/aepp-sdk-js#develop",
+    "@xkeshi/vue-qrcode": "^0.3.0",
+    "html-webpack-plugin": "^3.1.0",
+    "isomorphic-fetch": "^2.2.1",
+    "vee-validate": "^2.0.6",
+    "vue": "^2.5.16",
+    "vue-router": "^3.0.1",
+    "vue-template-compiler": "^2.5.16",
+    "vuex": "^3.0.1"
+  },
+  "devDependencies": {
+    "@babel/cli": "^7.0.0-beta.44",
+    "@babel/core": "^7.0.0-beta.44",
+    "@babel/plugin-transform-runtime": "^7.0.0-beta.44",
     "@babel/polyfill": "^7.0.0-beta.44",
+    "@babel/preset-env": "^7.0.0-beta.44",
     "@babel/runtime": "^7.0.0-beta.44",
-    "commander": "^2.15.1"
+    "commander": "^2.15.1",
+    "autoprefixer": "^8.2.0",
+    "babel-loader": "^7.1.4",
+    "clean-webpack-plugin": "^0.1.19",
+    "css-loader": "^0.28.11",
+    "extract-text-webpack-plugin": "^4.0.0-beta.0",
+    "html-webpack-harddisk-plugin": "^0.2.0",
+    "node-sass": "^4.0.0",
+    "postcss-loader": "^2.1.3",
+    "precss": "^3.1.2",
+    "sass-loader": "^6.0.7",
+    "standard": "^11.0.1",
+    "standard-loader": "^6.0.1",
+    "style-loader": "^0.20.3",
+    "vue-async-computed": "^3.3.1",
+    "vue-loader": "^14.2.2",
+    "vue-style-loader": "^4.1.0",
+    "webpack": "^4.2.0",
+    "webpack-bundle-analyzer": "^2.11.1",
+    "webpack-cli": "^2.0.13",
+    "webpack-serve": "^0.2.0"
   }
 }
