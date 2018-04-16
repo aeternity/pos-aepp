@@ -13,7 +13,7 @@ CREATE TABLE transactions (
   th char(60) PRIMARY KEY,
   sender varchar(150),
   amount integer,
-  completed boolean,
+  scanned_at TIMESTAMP DEFAULT NULL,
   block_id integer REFERENCES blocks
 );
 
