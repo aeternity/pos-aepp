@@ -6,3 +6,19 @@ html {
 :focus {
   outline-width: 0;
 }
+
+.input {
+  &--huge{
+    width: 40%;
+    display: block;
+    margin: 0 auto;
+    font-size: 3rem;
+    padding: 1rem;
+  }
+}
+
+.text{
+  &--center{
+    text-align: center;
+  }
+}

@@ -1,3 +1,5 @@
+// import socketio from 'socket.io'
+// import VueSocketio from 'vue-socket.io'
 import './custom.scss'
 import Vue from 'vue'
 import VueRouter from 'vue-router'
@@ -12,6 +14,9 @@ Vue.use(VueRouter)
 Vue.use(AsyncComputed)
 Vue.use(VeeValidate)
 
+// export const SocketInstance = socketio('http://localhost:4113')
+// Vue.use(VueSocketio, SocketInstance, store)
+
 console.info('about to render Vue App')
 new Vue({
   router: getRouter(store),
@@ -20,11 +25,7 @@ new Vue({
   beforeCreate () {
     try {
       // eslint-disable-next-line no-undef
-      let account = JSON.parse(localStorage.getItem('account'))
-      if (account) {
-        console.log('stored account', account)
-        store.commit('setAccount', account)
-      }
+      store.commit('setAccount')
     } catch (e) {
       console.log(e)
     }
