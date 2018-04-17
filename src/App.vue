@@ -12,6 +12,9 @@
     <div class="content">
       <router-view></router-view>
     </div>
+    <small>SHIFT + S = Serve Beer</small><br/>
+    <small>SHIFT + R = Refund Beer</small><br/>
+    <small>SHIFT + P = Refund Pfand</small>
   </div>
 </template>
 
