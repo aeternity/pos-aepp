@@ -1,20 +1,8 @@
 <template>
   <div id="app">
-    <ae-header name="Bæer POS">
-      <ae-button v-if="account && account.pub" type='dramatic' :to="{name: 'serve'}">🔍</ae-button>
-      <ae-button v-if="account && account.pub" type='dramatic' :to="{name: 'refund'}">💸</ae-button>
-      <div slot="mobile-left">
-      </div>
-      <div slot="mobile-right">
-        <ae-button v-if="account && account.pub" type='dramatic' :to="{name: 'serve'}">🔍</ae-button>
-      </div>
-    </ae-header>
     <div class="content">
       <router-view></router-view>
     </div>
-    <small>SHIFT + S = Serve Beer</small><br/>
-    <small>SHIFT + R = Refund Beer</small><br/>
-    <small>SHIFT + P = Refund Pfand</small>
   </div>
 </template>
 
@@ -39,28 +27,28 @@ export default {
     }
   },
   methods: {
-    keysListener (evt) {
-      let queryData = {}
-      if ((evt.keyCode === 114 || evt.keyCode === 82) && evt.shiftKey) {
-        // letter "r" or "R"
-        this.goToRoute = 'refund'
-        queryData = { refund: 1000 }
-      } else if ((evt.keyCode === 115 || evt.keyCode === 83) && evt.shiftKey) {
-        // letter "r" or "R" =
-        this.goToRoute = 'serve'
-      } else if ((evt.keyCode === 112 || evt.keyCode === 80) && evt.shiftKey) {
-        // letter "p" or "P" = PFAND
-        this.goToRoute = 'refund'
-        queryData = { refund: 10 }
-      }
-      this.$router.push({ path: this.goToRoute, query: queryData })
-    }
+    // keysListener (evt) {
+    // let queryData = {}
+    // if ((evt.keyCode === 114 || evt.keyCode === 82) && evt.shiftKey) {
+    //   // letter "r" or "R"
+    //   this.goToRoute = 'refund'
+    //   queryData = { refund: 1000 }
+    // } else if ((evt.keyCode === 115 || evt.keyCode === 83) && evt.shiftKey) {
+    //   // letter "r" or "R" =
+    //   this.goToRoute = 'serve'
+    // } else if ((evt.keyCode === 112 || evt.keyCode === 80) && evt.shiftKey) {
+    //   // letter "p" or "P" = PFAND
+    //   this.goToRoute = 'refund'
+    //   queryData = { refund: 10 }
+    // }
+    // this.$router.push({ path: this.goToRoute, query: queryData })
+    // }
   },
   created () {
-    document.addEventListener('keydown', this.keysListener)
+    // document.addEventListener('keydown', this.keysListener)
   },
   destroyed () {
-    document.removeEventListener('keydown', this.keysListener)
+    // document.removeEventListener('keydown', this.keysListener)
   },
   mounted () {
     console.info('Vue App mounted')

@@ -8,6 +8,7 @@ Vue.use(Vuex)
 const store = new Vuex.Store({
   state: {
     access_key: 'secret!',
+    barState: 'open',
     account: {
       pub: 'ak$3evGruG5reEY4eWDKCuZxkDBp4KTRyj4YJp98BGTgSegqURNpaTs2FEzVxHbiZwA4Z48JatQzNBoZEGM732BwDRhz3Ng3U',
       priv: '94e013ac4089d5002ccf6b4807952f3bd387540ce2af5d66e5490760a7086b85',
@@ -55,6 +56,9 @@ const store = new Vuex.Store({
       }
       return state.beerOrders[0]
     },
+    barStatus (state) {
+      return state.barState
+    },
     client () {
       const provider = new AeternityClient.providers.HttpProvider(
         'republica.aepps.com',
@@ -82,12 +86,17 @@ const store = new Vuex.Store({
       // eslint-disable-next-line no-undef
       localStorage.setItem('account', JSON.stringify(state.account))
     },
-    setBalance (state, newBalance) {
-      state.balance = newBalance
+    setBarStatus (state, newStatus) {
+      state.barState = newStatus
     }
   },
   actions: {
+    async updateBarStatus ({ commit, state, getters }, data) {
+      // TODO: this should be using WebSockets
+      commit('setBarStatus', data)
+    },
     async checkTransaction ({ commit, state, getters }, data) {
+      // TODO: this should be using WebSockets
       // debug
       // let data = 'th$oYzwYEyjG4ckKd7vnkzGT7Xn4aY1EM6N3pVmMeSxAqhmtzve5 MEUCIQDyWWfOVLtjwRObNe^mN5czdvBQKIJUO0PP7N7A-gpnQQIgaZg-irjSzwH8BoztI9JcXaPXE9IbWErO8sP2M0undNMì'
       data = data.split(' ')

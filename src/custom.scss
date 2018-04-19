@@ -8,17 +8,48 @@ html {
 }
 
 .input {
-  &--huge{
-    width: 40%;
+  &--huge{width: 40%;
     display: block;
     margin: 0 auto;
     font-size: 3rem;
     padding: 1rem;
+  }
+  &--error{
+    border-color: red;
+  }
+  &--ok{
+    border-color: blue;
   }
 }
 
 .text{
   &--center{
     text-align: center;
+  }
+  &--alert{
+    color: red;
+  }
+  &--info{
+    color: blue;
+  }
+  &--loading{
+    color: black;
+    animation: colorchange 1s infinite alternate;
+    -webkit-animation: colorchange 1s infinite alternate;
+    -moz-animation: colorchange 1s infinite alternate;
+    -o-animation: colorchange 1s infinite alternate;
+  }
+}
+
+@-webkit-keyframes colorchange {
+  0% {
+    color: black;
+  }
+  50% {
+    color: blue;
+  }
+
+  100% {
+    color: black;
   }
 }
