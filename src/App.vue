@@ -1,10 +1,8 @@
 <template>
   <div id="app">
-    <ae-header name="Bæer POS"></ae-header>
-
-    <ae-button v-if="account && account.pub" type='dramatic' :to="{name: 'check'}">🔍</ae-button>
-
-    <router-view></router-view>
+    <div class="content">
+      <router-view></router-view>
+    </div>
   </div>
 </template>
 
@@ -17,41 +15,43 @@ export default {
     AeHeader,
     AeButton
   },
+  data () {
+    return {
+      goToRoute: '',
+      amount: 0
+    }
+  },
   computed: {
     account () {
       return this.$store.state.account
     }
   },
   methods: {
-    async updateBalance () {
-      const pubKey = this.$store.state.account.pub
-      if (pubKey) {
-        try {
-          const balance = await this.$store.getters.clientInternal.accounts.getBalance(pubKey)
-          this.$store.commit('setBalance', balance)
-        } catch (err) {
-          console.log(err)
-        }
-      }
-    }
+    // keysListener (evt) {
+    // let queryData = {}
+    // if ((evt.keyCode === 114 || evt.keyCode === 82) && evt.shiftKey) {
+    //   // letter "r" or "R"
+    //   this.goToRoute = 'refund'
+    //   queryData = { refund: 1000 }
+    // } else if ((evt.keyCode === 115 || evt.keyCode === 83) && evt.shiftKey) {
+    //   // letter "r" or "R" =
+    //   this.goToRoute = 'serve'
+    // } else if ((evt.keyCode === 112 || evt.keyCode === 80) && evt.shiftKey) {
+    //   // letter "p" or "P" = PFAND
+    //   this.goToRoute = 'refund'
+    //   queryData = { refund: 10 }
+    // }
+    // this.$router.push({ path: this.goToRoute, query: queryData })
+    // }
+  },
+  created () {
+    // document.addEventListener('keydown', this.keysListener)
+  },
+  destroyed () {
+    // document.removeEventListener('keydown', this.keysListener)
   },
   mounted () {
-    // Get URL params (account info)
-
-    // this.account = this.$route.query
-
-    // DEBUG async fetch
-    // const blabla = this.fetchAsync('https://sdk-testnet.aepps.com/v2/top')
-    //                     .then((value) => console.log(value))
-    //                     .catch((error) => console.warn(error))
-
     console.info('Vue App mounted')
-
-    this.updateBalance()
-    setInterval(() => {
-      console.log('interval')
-      this.updateBalance()
-    }, 10000)
   }
 }
 </script>
