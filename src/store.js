@@ -1,13 +1,14 @@
 import Vuex from 'vuex'
 import Vue from 'vue'
 import { AeternityClient } from '@aeternity/aepp-sdk'
+
 // import { reject } from 'any-promise'
 
 Vue.use(Vuex)
 
 const store = new Vuex.Store({
   state: {
-    access_key: '8ytPIx43o8QSvYCGDu8hkllxAU9gnZr6HByqnvH8PRa2UANhwl',
+    access_key: '',
     barState: 'open', // open, closed, out_of_beer
     account: {
       pub: 'ak$3TRJBCvcvaegewQkexWVQkt7bEFf1tCvhvj6jfErZQNWyJ4NoyxUwkGrVVWDefxPpPEiY534fTutPaURn72HrGKCYaNWPM',
@@ -35,7 +36,10 @@ const store = new Vuex.Store({
       return state.barState
     },
     accessKey (state) {
-      return state.access_key
+      // eslint-disable-next-line no-undef
+      const localKey = localStorage.getItem('access_key')
+      console.log('Local:', localKey, ' state:', state.access_key)
+      return localKey || state.access_key
     },
     client () {
       const provider = new AeternityClient.providers.HttpProvider(
@@ -55,6 +59,12 @@ const store = new Vuex.Store({
     }
   },
   mutations: {
+    SET_ACCESS_KEY (state, accessKey) {
+      console.log('SET_ACCESS_KEY', accessKey)
+      // eslint-disable-next-line no-undef
+      localStorage.setItem('access_key', accessKey)
+      state.access_key = accessKey
+    },
     SET_BALANCE (state, newBalance) {
       state.balance = newBalance
     },
@@ -101,6 +111,9 @@ const store = new Vuex.Store({
     }
   },
   actions: {
+    setAccessKey ({ commit, state, getters }, accessKey) {
+      commit('SET_ACCESS_KEY', accessKey)
+    },
     async updateBalance ({ commit, state, getters }) {
       const pubKey = state.account.pub
       if (pubKey) {
