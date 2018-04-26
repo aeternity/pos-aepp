@@ -1,6 +1,8 @@
 <template>
   <div id="app">
-    <div class="content">
+    <h2 v-if="!accessKey">MISSING ACCESS KEY!</h2>
+    <h4 v-if="!accessKey">Please access the app as https://URL/?secret=POS-secret-here</h4>
+    <div v-if="accessKey" class="content">
       <router-view></router-view>
     </div>
   </div>
@@ -24,34 +26,19 @@ export default {
   computed: {
     account () {
       return this.$store.state.account
+    },
+    accessKey () {
+      return this.$store.getters.accessKey
+    },
+    accessKeyFromQuery () {
+      return this.$route.query.secret
     }
   },
-  methods: {
-    // keysListener (evt) {
-    // let queryData = {}
-    // if ((evt.keyCode === 114 || evt.keyCode === 82) && evt.shiftKey) {
-    //   // letter "r" or "R"
-    //   this.goToRoute = 'refund'
-    //   queryData = { refund: 1000 }
-    // } else if ((evt.keyCode === 115 || evt.keyCode === 83) && evt.shiftKey) {
-    //   // letter "r" or "R" =
-    //   this.goToRoute = 'serve'
-    // } else if ((evt.keyCode === 112 || evt.keyCode === 80) && evt.shiftKey) {
-    //   // letter "p" or "P" = PFAND
-    //   this.goToRoute = 'refund'
-    //   queryData = { refund: 10 }
-    // }
-    // this.$router.push({ path: this.goToRoute, query: queryData })
-    // }
-  },
-  created () {
-    // document.addEventListener('keydown', this.keysListener)
-  },
-  destroyed () {
-    // document.removeEventListener('keydown', this.keysListener)
-  },
   mounted () {
-    console.info('Vue App mounted')
+    if (this.accessKeyFromQuery) {
+      // console.info('Vue App mounted', this.accessKeyFromQuery)
+      this.$store.dispatch('setAccessKey', this.accessKeyFromQuery)
+    }
   }
 }
 </script>

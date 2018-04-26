@@ -1,63 +1,45 @@
 import Vuex from 'vuex'
 import Vue from 'vue'
 import { AeternityClient } from '@aeternity/aepp-sdk'
+
 // import { reject } from 'any-promise'
 
 Vue.use(Vuex)
 
 const store = new Vuex.Store({
   state: {
-    access_key: 'secret!',
-    barState: 'open',
+    access_key: '',
+    barState: 'open', // open, closed, out_of_beer
     account: {
-      pub: 'ak$3evGruG5reEY4eWDKCuZxkDBp4KTRyj4YJp98BGTgSegqURNpaTs2FEzVxHbiZwA4Z48JatQzNBoZEGM732BwDRhz3Ng3U',
-      priv: '94e013ac4089d5002ccf6b4807952f3bd387540ce2af5d66e5490760a7086b85',
+      pub: 'ak$3TRJBCvcvaegewQkexWVQkt7bEFf1tCvhvj6jfErZQNWyJ4NoyxUwkGrVVWDefxPpPEiY534fTutPaURn72HrGKCYaNWPM',
+      priv: '',
       domain: 'beer_bar.aet',
       name: 'Beer Bar'
     },
-    beerOrders: [
-      {
-        tx_hash: 'th$oYzwYEyjG4ckKd7vnkzGT7Xn4aY1EM6N3pVmMeSxAqhmtzve5',
-        signature: 'MEUCIQDyWWfOVLtjwRObNe^mN5czdvBQKIJUO0PP7N7A-gpnQQIgaZg-irjSzwH8BoztI9JcXaPXE9IbWErO8sP2M0undNMì',
-        sender: 'ak$3Jyki2rvn5wuwTsxXBs2tKMNugG9Qx7vNSxmEgwjAqqCKnEMiqY3TKcut551ThbCfA94AvQYiEZV7bEnvjyRZnvW25HAsY',
-        amount: 1000,
-        scanned_at: 1523978941,
-        block_id: '56r4rtygse',
-        response: false,
-        msg: 'There was a problem with BLABLA'
-      },
-      {
-        tx_hash: 'th$oYzwYEyjG4ckKd7vnkzGT7Xn4aY1EM6N3pVmMeSxAqhmtzve5',
-        signature: 'MEUCIQDyWWfOVLtjwRObNe^mN5czdvBQKIJUO0PP7N7A-gpnQQIgaZg-irjSzwH8BoztI9JcXaPXE9IbWErO8sP2M0undNMì',
-        sender: 'ak$3Jyki2rvn5wuwTsxXBs2tKMNugG9Qx7vNSxmEgwjAqqCKnEMiqY3TKcut551ThbCfA94AvQYiEZV7bEnvjyRZnvW25HAsY',
-        amount: 1000,
-        scanned_at: 1523978941,
-        block_id: '56r4rtygse',
-        response: true,
-        msg: 'OK'
-      },
-      {
-        tx_hash: 'th$oYzwYEyjG4ckKd7vnkzGT7Xn4aY1EM6N3pVmMeSxAqhmtzve5',
-        signature: 'MEUCIQDyWWfOVLtjwRObNe^mN5czdvBQKIJUO0PP7N7A-gpnQQIgaZg-irjSzwH8BoztI9JcXaPXE9IbWErO8sP2M0undNMì',
-        sender: 'ak$3Jyki2rvn5wuwTsxXBs2tKMNugG9Qx7vNSxmEgwjAqqCKnEMiqY3TKcut551ThbCfA94AvQYiEZV7bEnvjyRZnvW25HAsY',
-        amount: 1000,
-        scanned_at: 1523978941,
-        block_id: '56r4rtygse',
-        response: true,
-        msg: 'OK'
-      }
-    ],
+    posTransactions: [],
     balance: 0
   },
   getters: {
     lastBeerHash (state) {
-      if (state.beerOrders.length <= 0) {
+      if (state.posTransactions.length <= 0) {
         return null
       }
-      return state.beerOrders[0]
+      return state.posTransactions[0]
+    },
+    posTransactions (state) {
+      return state.posTransactions
+    },
+    barBalance (state) {
+      return state.balance
     },
     barStatus (state) {
       return state.barState
+    },
+    accessKey (state) {
+      // eslint-disable-next-line no-undef
+      const localKey = localStorage.getItem('access_key')
+      console.log('Local:', localKey, ' state:', state.access_key)
+      return localKey || state.access_key
     },
     client () {
       const provider = new AeternityClient.providers.HttpProvider(
@@ -77,38 +59,68 @@ const store = new Vuex.Store({
     }
   },
   mutations: {
-    addOrder (state, order) {
-      state.beerOrders.unshift(order)
+    SET_ACCESS_KEY (state, accessKey) {
+      console.log('SET_ACCESS_KEY', accessKey)
       // eslint-disable-next-line no-undef
-      localStorage.setItem('beerOrders', JSON.stringify(state.beerOrders))
+      localStorage.setItem('access_key', accessKey)
+      state.access_key = accessKey
     },
-    setAccount (state) {
+    SET_BALANCE (state, newBalance) {
+      state.balance = newBalance
+    },
+    ADD_TRANSACTION (state, transaction) {
+      transaction.ts = Date.now()
+      state.posTransactions.unshift(transaction)
+      // eslint-disable-next-line no-undef
+      localStorage.setItem('posTransactions', JSON.stringify(state.posTransactions))
+    },
+    SET_TRANSACTIONS (state, transactions) {
+      state.posTransactions = transactions
+      // eslint-disable-next-line no-undef
+      localStorage.setItem('posTransactions', JSON.stringify(state.posTransactions))
+    },
+    SET_ACCOUNT (state) {
       // eslint-disable-next-line no-undef
       localStorage.setItem('account', JSON.stringify(state.account))
     },
-    setBarStatus (state, newStatus) {
+    SET_BAR_STATUS (state, newStatus) {
       state.barState = newStatus
+    },
+    SOCKET_CONNECT (state, status) {
+      console.log('mutation: SOCKET_CONNECT')
+      // state.socketConnected = true
+    },
+    SOCKET_CONNECT_ERROR (state, error) {
+      console.log('mutation: CONNECT_ERROR, Reason:', error)
+      // state.socketConnected = true
+    },
+    SOCKET_DISCONNECT (state, data) {
+      console.log('mutation: SOCKET_DISCONNECT', data)
+      // state.socketConnected = false
+    },
+    SOCKET_GET_BAR_STATE (state, status) {
+      console.log('mutation: SOCKET_GET_BAR_STATE')
+      // this.SET_BAR_STATUS(status)
+    },
+    SOCKET_SET_BAR_STATE (state, status) {
+      console.log('mutation: SOCKET_SET_BAR_STATE')
+    },
+    SOCKET_BAR_STATE (state, obj) {
+      console.log('mutation: SOCKET_BAR_STATE', obj)
+      state.barState = obj.state
     }
   },
   actions: {
-    async updateBarStatus ({ commit, state, getters }, data) {
-      // TODO: this should be using WebSockets
-      commit('setBarStatus', data)
+    setAccessKey ({ commit, state, getters }, accessKey) {
+      commit('SET_ACCESS_KEY', accessKey)
     },
-    async checkTransaction ({ commit, state, getters }, data) {
-      // TODO: this should be using WebSockets
-      // debug
-      // let data = 'th$oYzwYEyjG4ckKd7vnkzGT7Xn4aY1EM6N3pVmMeSxAqhmtzve5 MEUCIQDyWWfOVLtjwRObNe^mN5czdvBQKIJUO0PP7N7A-gpnQQIgaZg-irjSzwH8BoztI9JcXaPXE9IbWErO8sP2M0undNMì'
-      data = data.split(' ')
-      const txHash = data[0]
-      // const sig = data[1]
-      // const pubKey = state.account.pub
-      if (txHash && txHash.startsWith('th$')) {
+    async updateBalance ({ commit, state, getters }) {
+      const pubKey = state.account.pub
+      if (pubKey) {
         try {
-          const txInfo = await getters.client.tx.getTransaction(txHash)
-          console.log('TX', txInfo.tx.sender)
-          // commit('someActions', someParams)
-          // return balance
+          const balance = await getters.clientInternal.accounts.getBalance(pubKey)
+          commit('SET_BALANCE', balance)
+          return balance
         } catch (err) {
           console.log(err)
         }

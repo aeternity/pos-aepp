@@ -5,7 +5,7 @@ const HtmlWebpackHarddiskPlugin = require('html-webpack-harddisk-plugin')
 const CleanWebpackPlugin = require('clean-webpack-plugin')
 const BundleAnalyzerPlugin = require('webpack-bundle-analyzer').BundleAnalyzerPlugin;
 
-const dist_folder = path.resolve(__dirname, 'dist');
+const distFolder = path.resolve(__dirname, 'dist');
 const jsLoader = 'babel-loader!standard-loader?error=true'
 
 module.exports = {
@@ -13,9 +13,9 @@ module.exports = {
   mode: process.env.NODE_ENV == 'prod' ? 'production' : 'development',
   output: {
     filename: '[name].bundle.js?[hash]',
-    path: dist_folder
+    path: distFolder
   },
-  devtool: 'eval-source-map',
+  devtool: process.env.NODE_ENV == 'prod' ? '' : 'eval-source-map',
   plugins: [
     new HtmlWebpackPlugin({
       template: 'index.html',
@@ -28,7 +28,7 @@ module.exports = {
     }),
     new HtmlWebpackHarddiskPlugin(),
     new ExtractTextPlugin('style.css?[hash]'),
-    new CleanWebpackPlugin([dist_folder]),
+    new CleanWebpackPlugin([distFolder]),
     // debug bundle (for optimisation)
     // new BundleAnalyzerPlugin()
   ],

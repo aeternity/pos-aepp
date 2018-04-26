@@ -17,7 +17,15 @@ This application is only intended to work with the [Beer App](https://github.com
 
 ### How it works
 
-// **TODO**
+1. Print this PDF to speed up the work:  https://github.com/aeternity/pos-aepp/pos-aepp-commands.pdf
+2. Access the app sending your secret via URL (eg. `http://URL_OF_APP/?secret=your-POS-secret-here`)
+3. Use a QR code scanner (or manually type in the input field) to switch POS functionalities of the POS application
+   * Possible commands:
+      1. `th$...` – Scan mode - Verifies a transaction
+      2. `number` - Refund mode - Refunds `number` AETs
+      3. `close` - Close POS
+      4. `out_of_beers` - Sets POS as "_out of beers_"
+      5. `open` - Open POS
 
 ## Installation
 
