@@ -17,6 +17,7 @@
         <h3 v-if="warningMsg" class="text--alert">{{warningMsg}}</h3>
       </div>
       <h3 v-if="loadingMsg" class="text--loading">{{loadingMsg}}</h3>
+      <div v-if="!windowHasFocus" class="focusWarning">Focus Lost 🙈</div>
     </div>
     <div class="right">
       <h6 class="pretitle pretitle--grey">BAR PUBLIC KEY: <strong>{{cutHashes(account.pub, 6, 91)}}</strong></h6>
@@ -45,7 +46,8 @@ export default {
       mode: 'Serve Beer',
       amount: 0,
       warningMsg: '',
-      loadingMsg: ''
+      loadingMsg: '',
+      windowHasFocus: true
     }
   },
   computed: {
@@ -225,6 +227,14 @@ export default {
     // }, 1000)
     // refresh balance once
     this.$store.dispatch('updateBalance')
+
+    window.addEventListener('focus', event => {
+      this.windowHasFocus = true
+    }, false)
+
+    window.addEventListener('blur', event => {
+      this.windowHasFocus = false
+    }, false)
   }
 }
 </script>
@@ -264,6 +274,12 @@ export default {
   &--grey{
     color: gray;
   }
+}
+.focusWarning {
+  font-size: 200px;
+  color: red;
+  font-weight: bold;
+  text-transform: uppercase;
 }
 
 </style>
