@@ -10,6 +10,7 @@ const store = new Vuex.Store({
   state: {
     access_key: '',
     barState: 'open', // open, closed, out_of_beer
+    socketConnected: true,
     account: {
       pub: 'ak$3TRJBCvcvaegewQkexWVQkt7bEFf1tCvhvj6jfErZQNWyJ4NoyxUwkGrVVWDefxPpPEiY534fTutPaURn72HrGKCYaNWPM',
       priv: '',
@@ -28,6 +29,9 @@ const store = new Vuex.Store({
     },
     posTransactions (state) {
       return state.posTransactions
+    },
+    socketConnection (state) {
+      return state.socketConnected
     },
     barBalance (state) {
       return state.balance
@@ -88,15 +92,15 @@ const store = new Vuex.Store({
     },
     SOCKET_CONNECT (state, status) {
       console.log('mutation: SOCKET_CONNECT')
-      // state.socketConnected = true
+      state.socketConnected = true
     },
     SOCKET_CONNECT_ERROR (state, error) {
       console.log('mutation: CONNECT_ERROR, Reason:', error)
-      // state.socketConnected = true
+      state.socketConnected = false
     },
     SOCKET_DISCONNECT (state, data) {
       console.log('mutation: SOCKET_DISCONNECT', data)
-      // state.socketConnected = false
+      state.socketConnected = false
     },
     SOCKET_GET_BAR_STATE (state, status) {
       console.log('mutation: SOCKET_GET_BAR_STATE')
@@ -127,6 +131,17 @@ const store = new Vuex.Store({
       }
       return 0
     }
+    // async getSenderFromTransaction ({ commit, state, getters }, transaction) {
+    //   try {
+    //     const theTransaction = await getters.client.tx.getTransaction(transaction)
+    //     console.log('sender', theTransaction.tx.sender)
+    //     // commit('SET_BALANCE', balance)
+    //     // return balance
+    //     return transaction
+    //   } catch (err) {
+    //     console.log(err)
+    //   }
+    // }
   }
 })
 

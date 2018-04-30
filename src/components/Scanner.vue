@@ -6,6 +6,7 @@
         <form @submit.prevent="inputCheck">
           <h6>BALANCE: {{barBalance}} AET</h6>
           <input ref="qr" type="text" id="qr" name="qr" v-model="qr"
+                          v-if="socketConnection && windowHasFocus"
                           autocomplete="off"
                           autofocus
                           @blur="refocusInput()"
@@ -17,7 +18,8 @@
         <h3 v-if="warningMsg" class="text--alert">{{warningMsg}}</h3>
       </div>
       <h3 v-if="loadingMsg" class="text--loading">{{loadingMsg}}</h3>
-      <div v-if="!windowHasFocus" class="focusWarning">Focus Lost 🙈</div>
+      <div v-if="!windowHasFocus && socketConnection" class="focusWarning">Focus Lost 🙈<br>CLICK HERE</div>
+      <div v-if="!socketConnection" class="connectionWarning">DISCONNECTED!</div>
     </div>
     <div class="right">
       <h6 class="pretitle pretitle--grey">BAR PUBLIC KEY: <strong>{{cutHashes(account.pub, 6, 91)}}</strong></h6>
@@ -51,6 +53,9 @@ export default {
     }
   },
   computed: {
+    socketConnection () {
+      return this.$store.getters.socketConnection
+    },
     accessKey () {
       return this.$store.getters.accessKey
     },
@@ -110,13 +115,36 @@ export default {
         }
       }, 1000)
     },
+    resetBar () {
+      // console.log('emitting set_bar_state with accessKey', this.accessKey, ' and status: ', status)
+      this.$socket.emit('reset_bar', this.accessKey, (data) => {
+        console.log('RESET bar status callback: ', data)
+        if (data.success) {
+          data.msg = `!!! BAR RESET !!!`
+          this.$store.commit('ADD_TRANSACTION', data)
+          this.setWarning(`🔄 BAR HAS BEEN RE-SET`)
+          this.setLoading('')
+        }
+      })
+    },
     setBarStatus (status) {
+      let icon = ''
       // console.log('emitting set_bar_state with accessKey', this.accessKey, ' and status: ', status)
       this.$socket.emit('set_bar_state', this.accessKey, status, (data) => {
-        // console.log('set bar status callback: ', data)
+        console.log('set bar status callback: ', data)
         if (data.success) {
           data.msg = `BAR ${status}`
           this.$store.commit('ADD_TRANSACTION', data)
+          switch (status) {
+            case 'open':
+              icon = '🍺'
+              break
+            default:
+              icon = '🔒'
+              break
+          }
+          this.setWarning(`${icon} BAR IS NOW ${status}`)
+          this.setLoading('')
         }
       })
     },
@@ -128,10 +156,16 @@ export default {
         this.setMode('Serve Beer')
         this.setAmount(0)
         this.setWarning('')
+        this.setLoading('')
       })
     },
     checkTransaction (data) {
       let tHashSig = data.split(' ')
+
+      // gets sender
+      // const sender = this.$store.dispatch('getSenderFromTransaction', tHashSig[0])
+      // console.log(sender)
+
       // console.log(`emitting scan with accessKey ${this.accessKey} txHash: ${tHashSig[0]} and signature ${tHashSig[1]}`)
       this.$socket.emit('scan', this.accessKey, tHashSig[0], tHashSig[1], (data) => {
         // console.log('scan callback: ', data)
@@ -139,15 +173,22 @@ export default {
         this.setMode('Serve Beer')
         this.setAmount(0)
         this.setWarning('')
+        this.setLoading('')
       })
     },
     inputCheck () {
       const data = this.qr
-      if (!data) {
-        this.setWarning('🤔 Unrecognized command')
+      if (this.barStatus === 'closed' && data === 'reset') {
+        this.setWarning('')
+        this.setLoading(`RESETTING BAR...`)
+        console.log('RESET BAR!')
+        this.resetBar()
+      } else if (!data) {
+        this.setWarning('🤔 Unrecognized command!!')
         return
       }
       // console.log('current bar status', this.barStatus)
+
       if (this.barStatus !== 'closed' || data === 'open') {
         if (data.match(/^\d/)) {
           // GOT: number:
@@ -162,7 +203,7 @@ export default {
           if (this.amount <= 0) {
             // GOT: Public Key, and no amount
             // ask for amount
-            this.setWarning('💰 You need to set an amount first:')
+            this.setWarning('💰 You need to set an amount first!')
           } else {
             // GOT: Public Key, and amount
             // actually refund
@@ -170,7 +211,6 @@ export default {
             this.setLoading(`refunding ${this.amount} to ${data}...`)
             // emit refund event
             this.refund(data)
-            this.setLoading('')
           }
         } else if (data.startsWith('th$') && this.barStatus !== 'out_of_beers') {
           // GOT: transaction + signature as string: "tx_hash sig":
@@ -181,16 +221,15 @@ export default {
           const tHashSig = data.split(' ')
           this.setLoading(`checking transaction ${tHashSig[0]}...`)
           this.checkTransaction(data)
-          this.setLoading('')
           // this.$store.dispatch('inputCheck', data)
         } else if (data === 'closed') {
-          this.setWarning('🔒 BAR IS NOW CLOSED')
+          this.setLoading('CLOSING BAR...')
           this.setBarStatus('closed')
         } else if (data === 'out_of_beers') {
-          this.setWarning('🔒 BAR IS OUT OF BEERS')
+          this.setLoading('SETTING "OUT OF BEER" STATUS...')
           this.setBarStatus('out_of_beers')
         } else if (data === 'open') {
-          this.setWarning('🍺 BAR IS NOW OPEN')
+          this.setLoading('OPENING BAR..')
           this.setBarStatus('open')
           this.setAmount(0)
           this.setMode('Serve Beer')
@@ -275,11 +314,10 @@ export default {
     color: gray;
   }
 }
-.focusWarning {
-  font-size: 200px;
+.focusWarning, .connectionWarning {
+  font-size: 70px;
   color: red;
   font-weight: bold;
   text-transform: uppercase;
 }
-
 </style>
