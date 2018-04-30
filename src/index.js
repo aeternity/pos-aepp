@@ -10,8 +10,9 @@ import store from './store'
 Vue.config.productionTip = false
 Vue.use(VueRouter)
 
-// Debug Ape Unit: http://192.168.111.108:5000
-// local dev: http://localhost:5000
+// Debug Ape Unit (Andrea's machine): http://192.168.111.108:5000
+// Local dev: http://localhost:5000
+// LIVE: https://republica-pos.aepps.com
 Vue.use(VueSocketio, 'https://republica-pos.aepps.com', store)
 
 console.info('about to render Vue App')

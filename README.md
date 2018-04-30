@@ -31,7 +31,7 @@ This application is only intended to work with the [Beer App](https://github.com
 
 ```
 git clone https://github.com/aeternity/pos-aepp
-cd beer-aepp
+cd pos-aepp
 yarn install
 ```
 
