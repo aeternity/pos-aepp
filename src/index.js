@@ -13,7 +13,7 @@ Vue.use(VueRouter)
 // Debug Ape Unit (Andrea's machine): http://192.168.111.108:5000
 // Local dev: http://localhost:5000
 // LIVE: https://republica-pos.aepps.com
-Vue.use(VueSocketio, 'http://192.168.111.108:5000', store)
+Vue.use(VueSocketio, 'https://republica-pos.aepps.com', store)
 
 console.info('about to render Vue App')
 new Vue({
